@@ -1,0 +1,9 @@
+# 실행 결과물 (지도 html)
+route_map.html
+
+
+# OSRM 및 지도 데이터
+*.osm.pbf
+*.osrm
+*.osrm.*
+osrm_data/
