@@ -1,40 +1,52 @@
 import geopandas as gpd
 from shapely.geometry import Point
 import random
+import pandas as pd
 
+# ✅ 무작위 좌표 생성 함수
 def generate_random_point_within(gdf):
-    # 모든 시군구 경계를 합쳐 하나의 Polygon으로 (멀티폴리곤 포함)
     country_shape = gdf.union_all()
-
-    # GeoJSON은 EPSG:4326 기준이어야 함 (WGS84)
     minx, miny, maxx, maxy = country_shape.bounds
 
     while True:
-        # 경계 바깥 포함 안 되게 랜덤 좌표 반복 생성
         lon = random.uniform(minx, maxx)
         lat = random.uniform(miny, maxy)
         point = Point(lon, lat)
-
         if country_shape.contains(point):
             return point, lat, lon
 
-# GeoJSON 파일 불러오기
+# ✅ GeoJSON 로드 및 좌표계 설정
 gdf = gpd.read_file("GeoJson/korea_municipalities.geojson")
-
-# CRS 설정 확인 및 설정
 if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
     gdf = gdf.set_crs("EPSG:4326")
 
-# 무작위 좌표 생성 (국토 내만)
+# ✅ 중심좌표 CSV 로드
+center_df = pd.read_csv("행정구역 중심좌표.csv")
+
+# ✅ 무작위 점 생성
 point, lat, lon = generate_random_point_within(gdf)
 
-print(f"대한민국 경계 내 무작위 좌표: 위도 {lat:.6f}, 경도 {lon:.6f}")
-
-# 해당 행정구역 찾기
+# ✅ 해당 점이 속한 행정구역 찾기
 matched = gdf[gdf.contains(point)]
-
-if not matched.empty:
-    name = matched.iloc[0].get("name", "알 수 없음")  # 'name' 필드명에 맞게 수정
-    print(f"이 좌표는 '{name}'(으)로 식별됩니다.")
+if matched.empty:
+    print("⚠️ 좌표가 행정구역 경계에 포함되지 않음.")
 else:
-    print("⚠️ 좌표가 행정구역 경계에 포함되지 않음 (예외적 상황)")
+    region_name = matched.iloc[0]['name']
+    print(f"📍 선택된 무작위 행정구역: {region_name}")
+
+    # ✅ 중심좌표 매칭
+    match = center_df[center_df['행정구역'] == region_name]
+    if not match.empty:
+        lat_center = round(match.iloc[0]['위도'], 4)
+        lon_center = round(match.iloc[0]['경도'], 4)
+
+        result_df = pd.DataFrame([{
+            "행정구역": region_name,
+            "위도": lat_center,
+            "경도": lon_center
+        }])
+
+        result_df.to_csv("무작위_행정구역_중심좌표.csv", index=False, encoding="utf-8-sig")
+        print("✅ 무작위 행정구역 중심좌표 CSV 저장 완료.")
+    else:
+        print("❌ 중심좌표 CSV에서 해당 행정구역을 찾을 수 없습니다.")

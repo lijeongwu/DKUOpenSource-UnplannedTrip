@@ -1,5 +1,6 @@
 # 실행 결과물 (지도 html)
-route_map.html
+random_map.html
+random_map_backup.html
 
 
 # OSRM 및 지도 데이터
@@ -7,6 +8,9 @@ route_map.html
 *.osrm
 *.osrm.*
 osrm_data/
+
+__pycache__/
+*.pyc
 
 # 회의록
 오픈소스SW기초 Team 5 줌 회의 기록.docx
