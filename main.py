@@ -17,8 +17,9 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 from PyQt5.QtCore import QUrl, QPoint
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
+from config import GOOGLE_API_KEY
 
-API_KEY = "AIzaSyCMKJKuiDSJZ_VkCHBsbKO2Zp_TdtsFFvg"
+API_KEY = GOOGLE_API_KEY
 gdf = gpd.read_file("GeoJson/korea_municipalities.geojson")
 if gdf.crs is None or gdf.crs.to_string() != "EPSG:4326":
     gdf = gdf.set_crs("EPSG:4326")
