@@ -26,4 +26,4 @@ docker server를 현재의 south-korea-latest.osrm 파일을 데이터로 구동
 
 docker run -t -i -p 5000:5000 -v "${PWD}/osrm_data:/data" osrm/osrm-backend osrm-routed --algorithm mld /data/south-korea-latest.osrm
 
-위의 설정이 끝나면 test.py 실행을 통해 로컬 OSRM 서버에 요청을 하고, 응답을 통해 지도 데이터에 표시 및 파일 생성이 가능하다.
+위의 설정이 끝나면 main.py 실행을 즉흥 여행 프로그램 실행이 가능하다.
